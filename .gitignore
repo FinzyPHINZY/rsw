@@ -10,3 +10,5 @@ public/uploads/
 coverage/
 playwright-report/
 test-results/
+
+docs/
