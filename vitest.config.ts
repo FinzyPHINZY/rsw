@@ -5,6 +5,7 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts"],
+    setupFiles: ["dotenv/config"],
   },
   resolve: {
     alias: { "@": path.resolve(__dirname, "src") },
