@@ -12,3 +12,6 @@ playwright-report/
 test-results/
 
 docs/
+
+# build info
+*.tsbuildinfo
