@@ -50,8 +50,11 @@ describe("public-articles", () => {
   it("filters by category slug", async () => {
     const catBSlug = (await db.category.findUniqueOrThrow({ where: { id: catB } })).slug;
     const { items } = await getPublishedArticles({ categorySlug: catBSlug, perPage: 100 });
-    expect(items.every((i) => i.slug === "s2-laliga")).toBe(true);
-    expect(items.length).toBeGreaterThanOrEqual(1);
+    // Robust to other published articles in this category (e.g. seeded data):
+    // every returned item must belong to the filtered category, and our fixture
+    // must be present.
+    expect(items.every((i) => i.category.slug === catBSlug)).toBe(true);
+    expect(items.map((i) => i.slug)).toContain("s2-laliga");
   });
 
   it("searches title case-insensitively", async () => {
@@ -81,8 +84,12 @@ describe("public-articles", () => {
   });
 
   it("getTrendingArticles orders by views desc", async () => {
-    const trending = await getTrendingArticles(3);
+    // Fetch enough to include our fixtures regardless of seeded data, then check
+    // relative order: s2-zlatan (50 views) must rank above s2-arsenal (10 views).
+    const trending = await getTrendingArticles(100);
     const idx = trending.map((t) => t.slug);
+    expect(idx.indexOf("s2-zlatan")).toBeGreaterThanOrEqual(0);
+    expect(idx.indexOf("s2-arsenal")).toBeGreaterThanOrEqual(0);
     expect(idx.indexOf("s2-zlatan")).toBeLessThan(idx.indexOf("s2-arsenal"));
   });
 
