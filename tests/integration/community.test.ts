@@ -10,6 +10,7 @@ import {
   getRecentComments,
   ForbiddenError,
 } from "@/lib/comments";
+import { togglePostLike, getPostLikeState } from "@/lib/post-likes";
 
 const cleanupUserIds: string[] = [];
 
@@ -145,5 +146,35 @@ describe("comments service", () => {
     expect(recent.length).toBeGreaterThanOrEqual(1);
     expect(recent[0]).toHaveProperty("author.username");
     expect(recent[0]).toHaveProperty("article.slug");
+  });
+});
+
+describe("post-likes service", () => {
+  let articleId: string;
+  let userId: string;
+
+  beforeAll(async () => {
+    const cat = await db.category.findFirstOrThrow();
+    const adminId = (await db.user.findFirstOrThrow({ where: { role: "ADMIN" } })).id;
+    const u = await registerUser({ username: `pl_${Date.now()}`, email: `pl-${Date.now()}@t.local`, password: "password123" });
+    userId = u.id;
+    cleanupUserIds.push(userId);
+    const a = await db.article.create({
+      data: { title: `PL ${Date.now()}`, slug: `pl-${Date.now()}`, content: { type: "doc", content: [] }, categoryId: cat.id, authorId: adminId, status: "PUBLISHED", publishedAt: new Date() },
+    });
+    articleId = a.id;
+  });
+
+  afterAll(async () => {
+    await db.postLike.deleteMany({ where: { articleId } });
+    await db.article.delete({ where: { id: articleId } });
+  });
+
+  it("toggles a post like and reports state", async () => {
+    expect(await getPostLikeState(articleId, userId)).toEqual({ count: 0, likedByMe: false });
+    expect(await togglePostLike(articleId, userId)).toEqual({ liked: true, count: 1 });
+    expect(await getPostLikeState(articleId, userId)).toEqual({ count: 1, likedByMe: true });
+    expect(await togglePostLike(articleId, userId)).toEqual({ liked: false, count: 0 });
+    expect(await getPostLikeState(articleId)).toEqual({ count: 0, likedByMe: false });
   });
 });
