@@ -8,6 +8,10 @@ import {
   getRelatedArticles,
   incrementViews,
 } from "@/lib/public-articles";
+import { auth } from "@/lib/auth";
+import { getPostLikeState } from "@/lib/post-likes";
+import { PostLikeButton } from "@/components/community/PostLikeButton";
+import { CommentSection } from "@/components/community/CommentSection";
 
 export const dynamic = "force-dynamic";
 
@@ -32,6 +36,8 @@ export default async function ArticlePage({
   await incrementViews(article.id);
   const related = await getRelatedArticles(article.id, article.categoryId, 3);
   const html = renderTiptap(article.content);
+  const session = await auth();
+  const likeState = await getPostLikeState(article.id, session?.user?.id);
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
@@ -47,6 +53,15 @@ export default async function ArticlePage({
           // eslint-disable-next-line @next/next/no-img-element
           <img src={article.featuredImage} alt="" className="mt-6 w-full rounded-lg object-cover" />
         )}
+        <div className="mt-4">
+          <PostLikeButton
+            slug={slug}
+            articleId={article.id}
+            initialLiked={likeState.likedByMe}
+            initialCount={likeState.count}
+            canLike={!!session?.user}
+          />
+        </div>
         <div
           className="prose prose-lg mt-8 max-w-none"
           dangerouslySetInnerHTML={{ __html: html }}
@@ -63,6 +78,8 @@ export default async function ArticlePage({
           </div>
         </section>
       )}
+
+      <CommentSection articleId={article.id} slug={slug} />
     </main>
   );
 }
