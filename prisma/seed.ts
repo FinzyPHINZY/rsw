@@ -44,7 +44,47 @@ async function main() {
     });
   }
 
-  console.log("Seed complete:", email, "+", categories.length, "categories");
+  const admin = await db.user.findUniqueOrThrow({ where: { email } });
+  const allCats = await db.category.findMany();
+  const catBySlug = (s: string) => allCats.find((c) => c.slug === s) ?? allCats[0];
+
+  const para = (t: string) => ({
+    type: "doc",
+    content: [{ type: "paragraph", content: [{ type: "text", text: t }] }],
+  });
+
+  const samples = [
+    { title: "Arsenal Edge Past Chelsea in London Derby", slug: "arsenal-edge-past-chelsea",
+      excerpt: "A late winner settles a tense derby at the Emirates.", categorySlug: "premier-league", views: 120 },
+    { title: "La Liga Title Race Heats Up", slug: "la-liga-title-race-heats-up",
+      excerpt: "Two points separate the top three with ten games to go.", categorySlug: "la-liga", views: 80 },
+    { title: "Champions League Last 16 Preview", slug: "champions-league-last-16-preview",
+      excerpt: "The standout ties and what to watch for.", categorySlug: "champions-league", views: 60 },
+    { title: "Transfer Window: Five Deals to Watch", slug: "transfer-window-five-deals",
+      excerpt: "The moves that could define the season run-in.", categorySlug: "transfer-news", views: 200 },
+    { title: "Why Pressing Is Back in Fashion", slug: "why-pressing-is-back",
+      excerpt: "Tactics corner: the return of the high press.", categorySlug: "football", views: 40 },
+  ];
+
+  for (const s of samples) {
+    await db.article.upsert({
+      where: { slug: s.slug },
+      update: {},
+      create: {
+        title: s.title,
+        slug: s.slug,
+        excerpt: s.excerpt,
+        content: para(`${s.title}. ${s.excerpt} More analysis and detail follows in the full report.`),
+        categoryId: catBySlug(s.categorySlug).id,
+        authorId: admin.id,
+        status: "PUBLISHED",
+        views: s.views,
+        publishedAt: new Date(),
+      },
+    });
+  }
+
+  console.log("Seed complete:", email, "+", categories.length, "categories +", samples.length, "articles");
 }
 
 main()
