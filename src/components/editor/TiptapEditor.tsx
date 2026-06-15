@@ -1,8 +1,7 @@
 "use client";
 import { useEditor, EditorContent } from "@tiptap/react";
-import StarterKit from "@tiptap/starter-kit";
-import Image from "@tiptap/extension-image";
 import type { JSONContent } from "@tiptap/react";
+import { tiptapExtensions } from "@/lib/tiptap-extensions";
 import { Button } from "@/components/ui/Button";
 
 export function TiptapEditor({
@@ -13,9 +12,7 @@ export function TiptapEditor({
   onChange: (json: JSONContent) => void;
 }) {
   const editor = useEditor({
-    // StarterKit (v3) bundles the Link extension; configure it here instead of
-    // adding @tiptap/extension-link separately (that would duplicate it).
-    extensions: [StarterKit.configure({ link: { openOnClick: false } }), Image],
+    extensions: tiptapExtensions,
     content: value,
     immediatelyRender: false,
     onUpdate: ({ editor }) => onChange(editor.getJSON()),
