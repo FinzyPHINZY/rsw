@@ -2,12 +2,14 @@ import { SectionHeading } from "@/components/site/SectionHeading";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { ComingSoon } from "@/components/site/ComingSoon";
 import { CategoryTag } from "@/components/site/CategoryTag";
+import { Avatar } from "@/components/community/Avatar";
 import Link from "next/link";
 import {
   getFeaturedArticle,
   getLatestArticles,
   getTrendingArticles,
 } from "@/lib/public-articles";
+import { getRecentComments } from "@/lib/comments";
 
 export const dynamic = "force-dynamic";
 
@@ -15,6 +17,7 @@ export default async function HomePage() {
   const featured = await getFeaturedArticle();
   const latest = await getLatestArticles(6, featured?.id);
   const trending = await getTrendingArticles(5);
+  const recentComments = await getRecentComments(5);
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
@@ -72,7 +75,28 @@ export default async function HomePage() {
       <div className="grid gap-6 md:grid-cols-3">
         <ComingSoon title="Live Scores" subtitle="Live match scores — coming soon" />
         <ComingSoon title="League Standings" subtitle="League tables — coming soon" />
-        <ComingSoon title="Community" subtitle="Reader discussion — coming soon" />
+        <div className="rounded-lg border border-gray-200 bg-white p-4">
+          <p className="mb-3 text-sm font-semibold text-secondary">Recent Community Activity</p>
+          {recentComments.length > 0 ? (
+            <ul className="space-y-3">
+              {recentComments.map((c) => (
+                <li key={c.id} className="flex gap-2">
+                  <Avatar username={c.author.username} size={28} />
+                  <div className="min-w-0">
+                    <p className="truncate text-xs text-gray-600">
+                      <span className="font-medium text-secondary">{c.author.username}</span> {c.content}
+                    </p>
+                    <Link href={`/news/${c.article.slug}`} className="text-xs text-primary hover:underline">
+                      on {c.article.title}
+                    </Link>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="text-xs text-gray-400">No discussion yet.</p>
+          )}
+        </div>
       </div>
     </main>
   );
