@@ -1,11 +1,11 @@
 import Link from "next/link";
-import { getCategoriesWithCounts } from "@/lib/public-articles";
+import { getCachedCategoriesWithCounts } from "@/lib/cached-articles";
 import { auth } from "@/lib/auth";
 import { Avatar } from "@/components/community/Avatar";
 import { LogoutButton } from "@/components/site/LogoutButton";
 
 export async function Navbar() {
-  const [categories, session] = await Promise.all([getCategoriesWithCounts(), auth()]);
+  const [categories, session] = await Promise.all([getCachedCategoriesWithCounts(), auth()]);
   const user = session?.user;
 
   return (

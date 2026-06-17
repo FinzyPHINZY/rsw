@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { SearchBar } from "@/components/site/SearchBar";
 import { Pagination } from "@/components/site/Pagination";
-import { getPublishedArticles, getCategoriesWithCounts } from "@/lib/public-articles";
+import { getCachedPublishedArticles, getCachedCategoriesWithCounts } from "@/lib/cached-articles";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,8 @@ export default async function NewsPage({
   const q = sp.q;
 
   const [{ items, totalPages, page: current }, categories] = await Promise.all([
-    getPublishedArticles({ categorySlug, q, page, perPage: 12 }),
-    getCategoriesWithCounts(),
+    getCachedPublishedArticles({ categorySlug, q, page, perPage: 12 }),
+    getCachedCategoriesWithCounts(),
   ]);
 
   function chipHref(slug?: string) {

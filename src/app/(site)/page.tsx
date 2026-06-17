@@ -5,19 +5,15 @@ import { StandingsPreview } from "@/components/sports/StandingsPreview";
 import { CategoryTag } from "@/components/site/CategoryTag";
 import { Avatar } from "@/components/community/Avatar";
 import Link from "next/link";
-import {
-  getFeaturedArticle,
-  getLatestArticles,
-  getTrendingArticles,
-} from "@/lib/public-articles";
+import { getCachedFeatured, getCachedLatest, getCachedTrending } from "@/lib/cached-articles";
 import { getRecentComments } from "@/lib/comments";
 
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const featured = await getFeaturedArticle();
-  const latest = await getLatestArticles(6, featured?.id);
-  const trending = await getTrendingArticles(5);
+  const featured = await getCachedFeatured();
+  const latest = await getCachedLatest(6, featured?.id);
+  const trending = await getCachedTrending(5);
   const recentComments = await getRecentComments(5);
 
   return (

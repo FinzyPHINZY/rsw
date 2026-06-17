@@ -3,11 +3,8 @@ import { CategoryTag } from "@/components/site/CategoryTag";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { renderTiptap } from "@/lib/tiptap-render";
-import {
-  getArticleBySlug,
-  getRelatedArticles,
-  incrementViews,
-} from "@/lib/public-articles";
+import { incrementViews } from "@/lib/public-articles";
+import { getCachedArticleBySlug, getCachedRelated } from "@/lib/cached-articles";
 import { auth } from "@/lib/auth";
 import { getPostLikeState } from "@/lib/post-likes";
 import { PostLikeButton } from "@/components/community/PostLikeButton";
@@ -30,11 +27,11 @@ export default async function ArticlePage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const article = await getArticleBySlug(slug);
+  const article = await getCachedArticleBySlug(slug);
   if (!article) notFound();
 
   await incrementViews(article.id);
-  const related = await getRelatedArticles(article.id, article.categoryId, 3);
+  const related = await getCachedRelated(article.id, article.categoryId, 3);
   const html = renderTiptap(article.content);
   const session = await auth();
   const likeState = await getPostLikeState(article.id, session?.user?.id);
