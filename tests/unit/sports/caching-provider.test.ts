@@ -1,16 +1,16 @@
 import { describe, it, expect } from "vitest";
 import { CachingSportsProvider } from "@/lib/sports/caching-provider";
 import type { SportsProvider } from "@/lib/sports/provider";
-import type { Standing, Match, MatchQuery } from "@/lib/sports/types";
+import type { Standing, Match } from "@/lib/sports/types";
 
 class CountingProvider implements SportsProvider {
   standingsCalls = 0;
   matchCalls = 0;
-  async getStandings(_slug: string): Promise<Standing[]> {
+  async getStandings(): Promise<Standing[]> {
     this.standingsCalls++;
     return [];
   }
-  async getMatches(_opts: MatchQuery): Promise<Match[]> {
+  async getMatches(): Promise<Match[]> {
     this.matchCalls++;
     return [];
   }

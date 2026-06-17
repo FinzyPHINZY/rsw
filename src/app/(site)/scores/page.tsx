@@ -1,3 +1,4 @@
+import type { Match } from "@/lib/sports/types";
 import { getSportsProvider } from "@/lib/sports";
 import { findLeague } from "@/lib/sports/leagues";
 import { LeagueSelector } from "@/components/sports/LeagueSelector";
@@ -13,7 +14,7 @@ export default async function ScoresPage({
   const sp = await searchParams;
   const leagueSlug = findLeague(sp.league ?? "") ? sp.league : undefined;
 
-  let content;
+  let groups: { live: Match[]; upcoming: Match[]; finished: Match[] } | null = null;
   try {
     const provider = getSportsProvider();
     const [live, upcoming, finished] = await Promise.all([
@@ -21,22 +22,24 @@ export default async function ScoresPage({
       provider.getMatches({ leagueSlug, status: "upcoming" }),
       provider.getMatches({ leagueSlug, status: "finished" }),
     ]);
-    content = (
-      <>
-        <MatchList title="Live" matches={live} />
-        <MatchList title="Upcoming" matches={upcoming} />
-        <MatchList title="Results" matches={finished} />
-      </>
-    );
+    groups = { live, upcoming, finished };
   } catch {
-    content = <p className="text-sm text-gray-400">Scores unavailable right now.</p>;
+    groups = null;
   }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold tracking-tight">Live Scores</h1>
       <LeagueSelector basePath="/scores" active={leagueSlug ?? ""} />
-      {content}
+      {groups === null ? (
+        <p className="text-sm text-gray-400">Scores unavailable right now.</p>
+      ) : (
+        <>
+          <MatchList title="Live" matches={groups.live} />
+          <MatchList title="Upcoming" matches={groups.upcoming} />
+          <MatchList title="Results" matches={groups.finished} />
+        </>
+      )}
     </main>
   );
 }

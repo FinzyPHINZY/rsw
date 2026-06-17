@@ -1,3 +1,4 @@
+import type { Standing } from "@/lib/sports/types";
 import { getSportsProvider } from "@/lib/sports";
 import { DEFAULT_LEAGUE, findLeague } from "@/lib/sports/leagues";
 import { LeagueSelector } from "@/components/sports/LeagueSelector";
@@ -14,19 +15,22 @@ export default async function StandingsPage({
   const slug = findLeague(sp.league ?? "") ? sp.league! : DEFAULT_LEAGUE;
   const league = findLeague(slug)!;
 
-  let body;
+  let standings: Standing[] | null = null;
   try {
-    const standings = await getSportsProvider().getStandings(slug);
-    body = <LeagueTable standings={standings} />;
+    standings = await getSportsProvider().getStandings(slug);
   } catch {
-    body = <p className="text-sm text-gray-400">Standings unavailable right now.</p>;
+    standings = null;
   }
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="mb-6 text-2xl font-bold tracking-tight">{league.name} Table</h1>
       <LeagueSelector basePath="/standings" active={slug} />
-      {body}
+      {standings === null ? (
+        <p className="text-sm text-gray-400">Standings unavailable right now.</p>
+      ) : (
+        <LeagueTable standings={standings} />
+      )}
     </main>
   );
 }

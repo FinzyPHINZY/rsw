@@ -1,6 +1,7 @@
 import { SectionHeading } from "@/components/site/SectionHeading";
 import { ArticleCard } from "@/components/site/ArticleCard";
-import { ComingSoon } from "@/components/site/ComingSoon";
+import { ScoreStrip } from "@/components/sports/ScoreStrip";
+import { StandingsPreview } from "@/components/sports/StandingsPreview";
 import { CategoryTag } from "@/components/site/CategoryTag";
 import { Avatar } from "@/components/community/Avatar";
 import Link from "next/link";
@@ -71,10 +72,10 @@ export default async function HomePage() {
         </aside>
       </div>
 
-      {/* Placeholder sections (later slices) */}
+      {/* Sports + community */}
       <div className="grid gap-6 md:grid-cols-3">
-        <ComingSoon title="Live Scores" subtitle="Live match scores — coming soon" />
-        <ComingSoon title="League Standings" subtitle="League tables — coming soon" />
+        <ScoreStrip />
+        <StandingsPreview />
         <div className="rounded-lg border border-gray-200 bg-white p-4">
           <p className="mb-3 text-sm font-semibold text-secondary">Recent Community Activity</p>
           {recentComments.length > 0 ? (
