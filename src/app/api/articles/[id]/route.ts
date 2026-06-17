@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { auth } from "@/lib/auth";
 import { updateArticle, deleteArticle } from "@/lib/articles";
 import { updateArticleSchema } from "@/lib/validators/article";
+import { TAG_ARTICLES, articleTag } from "@/lib/cache-tags";
+import { db } from "@/lib/db";
 
 export async function PATCH(
   req: Request,
@@ -17,7 +20,10 @@ export async function PATCH(
   if (!parsed.success) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
-  return NextResponse.json(await updateArticle(id, parsed.data));
+  const updated = await updateArticle(id, parsed.data);
+  revalidateTag(TAG_ARTICLES, "max");
+  revalidateTag(articleTag(updated.slug), "max");
+  return NextResponse.json(updated);
 }
 
 export async function DELETE(
@@ -29,6 +35,9 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { id } = await params;
+  const existing = await db.article.findUnique({ where: { id }, select: { slug: true } });
   await deleteArticle(id);
+  revalidateTag(TAG_ARTICLES, "max");
+  if (existing) revalidateTag(articleTag(existing.slug), "max");
   return NextResponse.json({ ok: true });
 }
