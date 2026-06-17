@@ -18,6 +18,8 @@ export async function Navbar() {
               {c.name}
             </Link>
           ))}
+          <Link href="/scores" className="text-sm font-medium text-gray-600 hover:text-primary">Scores</Link>
+          <Link href="/standings" className="text-sm font-medium text-gray-600 hover:text-primary">Standings</Link>
         </nav>
         <div className="flex items-center gap-3">
           <Link href="/news" className="text-sm font-semibold text-primary hover:underline">All News</Link>
