@@ -4,6 +4,15 @@ import { findLeague } from "@/lib/sports/leagues";
 import { LeagueSelector } from "@/components/sports/LeagueSelector";
 import { MatchList } from "@/components/sports/MatchList";
 
+import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Live Scores",
+  description: "Live football scores, fixtures, and results.",
+  alternates: { canonical: `${SITE_URL}/scores` },
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function ScoresPage({

@@ -1,4 +1,6 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { SITE_URL, SITE_DESCRIPTION } from "@/lib/site";
 import { CategoryTag } from "@/components/site/CategoryTag";
 import { ArticleCard } from "@/components/site/ArticleCard";
 import { SectionHeading } from "@/components/site/SectionHeading";
@@ -11,6 +13,35 @@ import { PostLikeButton } from "@/components/community/PostLikeButton";
 import { CommentSection } from "@/components/community/CommentSection";
 
 export const dynamic = "force-dynamic";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getCachedArticleBySlug(slug);
+  if (!article) return {};
+  const url = `${SITE_URL}/news/${article.slug}`;
+  const images = article.featuredImage ? [`${SITE_URL}${article.featuredImage}`] : [];
+  const description = article.excerpt ?? SITE_DESCRIPTION;
+  return {
+    title: article.title,
+    description,
+    alternates: { canonical: url },
+    openGraph: {
+      type: "article",
+      url,
+      title: article.title,
+      description,
+      images,
+      // coerce: unstable_cache returns dates as ISO strings on a cache hit
+      publishedTime: new Date(article.publishedAt ?? article.createdAt).toISOString(),
+      authors: [article.author.username],
+    },
+    twitter: { card: "summary_large_image", title: article.title, images },
+  };
+}
 
 function formatDate(d: Date | null): string {
   if (!d) return "";

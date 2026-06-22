@@ -4,6 +4,15 @@ import { DEFAULT_LEAGUE, findLeague } from "@/lib/sports/leagues";
 import { LeagueSelector } from "@/components/sports/LeagueSelector";
 import { LeagueTable } from "@/components/sports/LeagueTable";
 
+import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "Standings",
+  description: "League tables and standings for top football competitions.",
+  alternates: { canonical: `${SITE_URL}/standings` },
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function StandingsPage({

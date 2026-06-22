@@ -4,6 +4,15 @@ import { SearchBar } from "@/components/site/SearchBar";
 import { Pagination } from "@/components/site/Pagination";
 import { getCachedPublishedArticles, getCachedCategoriesWithCounts } from "@/lib/cached-articles";
 
+import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
+
+export const metadata: Metadata = {
+  title: "News",
+  description: "Latest football news and analysis from RSW.",
+  alternates: { canonical: `${SITE_URL}/news` },
+};
+
 export const dynamic = "force-dynamic";
 
 export default async function NewsPage({

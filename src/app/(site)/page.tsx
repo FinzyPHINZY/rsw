@@ -7,6 +7,12 @@ import { Avatar } from "@/components/community/Avatar";
 import Link from "next/link";
 import { getCachedFeatured, getCachedLatest, getCachedTrending } from "@/lib/cached-articles";
 import { getRecentComments } from "@/lib/comments";
+import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
+
+export const metadata: Metadata = {
+  alternates: { canonical: SITE_URL },
+};
 
 export const dynamic = "force-dynamic";
 
