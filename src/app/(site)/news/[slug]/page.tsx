@@ -11,6 +11,8 @@ import { auth } from "@/lib/auth";
 import { getPostLikeState } from "@/lib/post-likes";
 import { PostLikeButton } from "@/components/community/PostLikeButton";
 import { CommentSection } from "@/components/community/CommentSection";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { articleJsonLd } from "@/lib/seo/jsonld";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +71,7 @@ export default async function ArticlePage({
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
+      <JsonLd data={articleJsonLd(article, SITE_URL)} />
       <article>
         <CategoryTag name={article.category.name} slug={article.category.slug} />
         <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-secondary md:text-4xl">

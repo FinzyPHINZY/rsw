@@ -9,6 +9,8 @@ import { getCachedFeatured, getCachedLatest, getCachedTrending } from "@/lib/cac
 import { getRecentComments } from "@/lib/comments";
 import type { Metadata } from "next";
 import { SITE_URL } from "@/lib/site";
+import { JsonLd } from "@/components/seo/JsonLd";
+import { websiteJsonLd, organizationJsonLd } from "@/lib/seo/jsonld";
 
 export const metadata: Metadata = {
   alternates: { canonical: SITE_URL },
@@ -24,6 +26,8 @@ export default async function HomePage() {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-8">
+      <JsonLd data={websiteJsonLd(SITE_URL)} />
+      <JsonLd data={organizationJsonLd(SITE_URL)} />
       {/* Hero */}
       {featured ? (
         <section className="mb-12">
