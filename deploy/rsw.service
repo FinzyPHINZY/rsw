@@ -1,0 +1,15 @@
+[Unit]
+Description=RSW (Reality Sporting World) Next.js app
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=rsw
+WorkingDirectory=/home/rsw/rsw
+EnvironmentFile=/etc/rsw/rsw.env
+ExecStart=/usr/bin/pnpm start
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
